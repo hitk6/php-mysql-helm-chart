@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+  labels:
+    app: apache
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+      - name: php-apache
+        image: "{{ .Values.image.php.name }}:{{ .Values.image.php.tag }}"     #docker image to host php webserver
+        ports:
+        - containerPort: {{ .Values.service.php.port }}
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          # if the limit reach to 100m it will fire up new pod.
+          # request will make sure to give atleast 100m cpu to pod.
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
